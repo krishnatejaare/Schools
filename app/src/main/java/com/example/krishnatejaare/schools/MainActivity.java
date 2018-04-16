@@ -15,9 +15,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AsyncResponse {
     List<PlacesReadTask>schoolsamples=new ArrayList<>();
     List<ResultsReadTask>resultssamples=new ArrayList<>();
+    private static final int ASYNC_ONE = 1;
+    private static final int ASYNC_TWO = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         System.out.print(resultssamples);
     }
+
     public void onClick(View view) {
         if (view.getId() == R.id.viewlist) {
 
@@ -132,7 +135,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         readcsvdata();
         resultsreadcsvdata();
+        url();
+        url2();
+
     }
+
+    private void url() {
+        StringBuilder PlacesUrl = new StringBuilder("https://data.cityofnewyork.us/resource/97mf-9njv.json");
+        ReadTask googlePlacesReadTask = new ReadTask();
+        Object[] toPass = new Object[1];
+        toPass[0] = PlacesUrl.toString();
+        googlePlacesReadTask.execute(toPass);
+    }
+
+
+    @Override
+    public void onProcessFinish(Object result, int id) {
+
+        if(id == ASYNC_ONE){
+            List<PlacesReadTask>res=(List<PlacesReadTask>) result;
+            schoolsamples=res;
+        }
+        if(id == ASYNC_TWO){
+            List<ResultsReadTask>res=(List<ResultsReadTask>) result;
+            resultssamples=res;
+        }
+
+    }
+
+    private void url2() {
+        StringBuilder PlacesUrl = new StringBuilder("https://data.cityofnewyork.us/resource/734v-jeq5.json");
+        DetailsReadTask googlePlacesReadTask = new DetailsReadTask();
+        Object[] toPass = new Object[1];
+        toPass[0] = PlacesUrl.toString();
+        googlePlacesReadTask.execute(toPass);
+    }
+
+
+
 
 
 }
